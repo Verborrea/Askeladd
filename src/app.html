@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="apple-touch-icon" sizes="180x180" href="%sveltekit.assets%/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="%sveltekit.assets%/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="%sveltekit.assets%/favicon-16x16.png">
+		<link rel="manifest" href="%sveltekit.assets%/site.webmanifest">
+		<link rel="mask-icon" href="%sveltekit.assets%/safari-pinned-tab.svg" color="#5bbad5">
+		<link rel="shortcut icon" href="%sveltekit.assets%/favicon.ico">
+		<meta name="apple-mobile-web-app-title" content="Askeladd">
+		<meta name="application-name" content="Askeladd">
+		<meta name="msapplication-TileColor" content="#ff0000">
+		<meta name="msapplication-config" content="%sveltekit.assets%/browserconfig.xml">
+		<meta name="theme-color" content="#ff4352">
+		<meta name="author" content="Alan Monroy">
+		<link rel="preload" as="font" href="%sveltekit.assets%/inter.woff2" crossorigin>
+		<style>
+			@font-face {
+				font-family: 'Inter';
+				font-style: normal;
+				font-weight: 400;
+				font-display: swap;
+				src: url(%sveltekit.assets%/inter.woff2) format('woff2');
+				unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+			}
+			@font-face {
+				font-family: 'Inter';
+				font-style: normal;
+				font-weight: 700;
+				font-display: swap;
+				src: url(%sveltekit.assets%/inter.woff2) format('woff2');
+				unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+			}
+			:root {
+				--back: #ffffff;
+				--main1: #ff4352;
+				--main2: #f86671;
+				--secondary: #cacaca;
+				--tertiary: #ececec;
+				--text: #000000;
+
+				background-color: var(--back);
+				color: var(--text);
+				font: 16px/1.1'Inter', sans-serif;
+				color-scheme: only light;
+				counter-reset: preguntas;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--back: #282828;
+					--main1: #ff4352;
+					--main2: #f86671;
+					--secondary: #3d3d3d;
+					--tertiary: #606060;
+					--text: #ffffff;
+				}
+			}
+			body,h1,h2,h3,h4,p,ul,button{margin:0;padding:0}
+			a{text-decoration:none}
+			ul{list-style:none}
+			.logo {font-size: 32px;font-weight: 900;line-height: 36px;letter-spacing: -0.06em;color: var(--text)}
+			.le_button {
+				color: var(--back);
+				background: var(--main1);
+				padding: 8px 14px;
+				border: 0;
+				border-radius: 12px;
+				font-size: 1em;
+				font-weight: bold;
+			}
+			.le_button:hover{background:var(--main2)}
+			.error {
+				color: var(--back);
+				background: var(--main1);
+				position: absolute;
+				z-index: 999999;
+				top: 16px;
+				left: 50%;
+				transform: translateX(-50%);
+				padding: 16px;
+				border-radius: 12px;
+			}
+			.title {
+				font-size: 20px;
+				line-height: 20px;
+				font-weight: 800;
+				color: var(--text);
+			}
+			aside {
+				display: flex;
+				flex-shrink: 0;
+				flex-direction: column;
+				padding: var(--padding);
+				gap: var(--padding);
+				width: 320px;
+				overflow-y: scroll;
+				background-color: var(--tertiary);
+			}
+			aside button {
+				display: flex;
+				justify-content: center;
+				width: 100%;
+				padding: 12px;
+				border: none;
+				border-radius: var(--radius);
+				font-size: 16px;
+				line-height: 24px;
+				font-weight: 700;
+				color: var(--text);
+				background: var(--back);
+			}
+			aside button:hover {
+				background-color: var(--secondary);
+			}
+			aside button:active {
+				transform: scale(0.95);
+			}
+			aside button:disabled {
+				background: var(--back);
+				transform: scale(1);
+			}
+			aside ul {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+			}
+
+			table {
+				table-layout: fixed;
+				border-collapse: collapse;
+				background: var(--secondary);
+				border-radius: 16px;
+				overflow: hidden;
+			}
+
+			thead {
+				border-radius: 16px;
+				background: var(--main1);
+			}
+
+			th {
+				box-sizing: border-box;
+				white-space: nowrap;
+				padding: 8px;
+			}
+
+			td {
+				padding: 0;
+			}
+			table input, table button {
+				width: 100%;
+				box-sizing: border-box;
+				background: 0;
+				border: 0;
+				color: var(--text);
+				font-size: 16px;
+				padding: 8px;
+			}
+			table input[type="number"] {
+				text-align: center;
+			}
+
+			table button:hover,
+			table input:focus,
+			table input:hover {
+				outline: none;
+				background: var(--back);
+			}
+
+			.button {
+				background: var(--main1);
+				color: var(--back);
+				border: none;
+				font-weight: bold;
+			}
+
+			.button:active {
+				outline: none;
+				scale: 0.95;
+			}
+
+			.button:focus {
+				outline: none;
+			}
+
+			.button:disabled {
+				background: var(--main2);
+				scale: 1 !important;
+			}
+
+			input::-ms-clear, input::-ms-reveal {
+				display: none;
+			}
+			#dnd-action-dragged-el>a {
+				cursor: grabbing;
+			}
+			#dnd-action-dragged-el>a::before {
+				content: '-' !important;
+			}
+
+			/* Animación de carga al cargar documentos */
+			.lds-ring {
+				display: inline-block;
+				position: relative;
+				width: 20px;
+				height: 20px;
+			}
+			.lds-ring.big-ring {
+				width: 60px;
+				height: 70px;
+			}
+			.lds-ring div {
+				box-sizing: border-box;
+				display: block;
+				position: absolute;
+				width: 16px;
+				height: 16px;
+				margin: 2px;
+				border: 2px solid var(--text);
+				border-radius: 50%;
+				animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+				border-color: var(--text) transparent transparent transparent;
+			}
+			.lds-ring.big-ring div {
+				width: 48px;
+				height: 48px;
+				margin: 6px;
+				border: 6px solid var(--text);
+				border-color: var(--text) transparent transparent transparent;
+			}
+			.lds-ring div:nth-child(1) {
+				animation-delay: -0.45s;
+			}
+			.lds-ring div:nth-child(2) {
+				animation-delay: -0.3s;
+			}
+			.lds-ring div:nth-child(3) {
+				animation-delay: -0.15s;
+			}
+			@keyframes lds-ring {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+
+			/* Para ocultar el diseño por defecto de los input[type=number] */
+			input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+				-webkit-appearance: none;
+				margin: 0;
+			}
+			input[type=number] {
+				-moz-appearance: textfield;
+				appearance: textfield;
+			}
+		</style>
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>
