@@ -23,7 +23,12 @@ export const actions = {
 			status: form_data.get("status")
 		}
 
-		let data = form_data.get("data")
+		let data = JSON.parse(form_data.get("data"))
+
+		if (exam.status === "En Proceso" && data.length === 0) {
+			exam.status = "En Blanco"
+			exam.content = []
+		}
 
 		if (exam.status === "En Blanco" && data.length > 0) {
 			exam.status = "En Proceso"

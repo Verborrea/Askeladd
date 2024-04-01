@@ -127,7 +127,9 @@
 	const subirNotas = async () => {
 		subirNotasLoading = true
 
-		await sendFiles()
+		if (images_to_add.length || images_to_delete.length) {
+			await sendFiles()
+		}
 
 		const formData = new FormData()
 
@@ -264,6 +266,8 @@
 		<EditHeader
 			{isClean}
 			{sendFiles}
+			images_to_add = {images_to_add.length}
+			images_to_delete = {images_to_delete.length}
 			status={exam.status}
 			data={items}
 			type={exam.type}

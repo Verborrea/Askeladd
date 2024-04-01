@@ -2,18 +2,20 @@
 	import { page } from "$app/stores"
     import Exit from "$lib/components/Exit.svelte"
 
-	export let data, type, name, status, isClean = () => true, sendFiles
+	export let data, type, name, status, isClean = () => true, sendFiles, images_to_add, images_to_delete
 
 	let saveExamLoading = false
 
 	const saveExam = async () => {
 		saveExamLoading = true
-
-		await sendFiles()
 		
 		if (!isClean()) {
 			saveExamLoading = false
 			return
+		}
+
+		if (images_to_add || images_to_delete) {
+			await sendFiles()
 		}
 
 		const formData = new FormData()
