@@ -16,6 +16,7 @@
 	}
 </script>
 
+{#if filtered_list.length > 0}
 <ul>
 	{#each filtered_list as exam}
 		<li>
@@ -46,6 +47,9 @@
 		</li>
 	{/each}
 </ul>
+{:else}
+<p class="msg">No hay examenes para mostrar de momento :(</p>
+{/if}
 
 <style>
 	ul {
@@ -118,6 +122,12 @@
 	.black {
 		color: #ffffff;
 		background: #282828;
+	}
+	.msg {
+		flex: 1;
+		text-align: center;
+		align-self: center;
+		font-size: 18px;
 	}
 	@media (max-width: 1100px) {
 		ul {

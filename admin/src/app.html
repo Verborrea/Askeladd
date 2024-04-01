@@ -9,8 +9,8 @@
 		<link rel="manifest" href="%sveltekit.assets%/site.webmanifest">
 		<link rel="mask-icon" href="%sveltekit.assets%/safari-pinned-tab.svg" color="#5bbad5">
 		<link rel="shortcut icon" href="%sveltekit.assets%/favicon.ico">
-		<meta name="apple-mobile-web-app-title" content="Askeladd">
-		<meta name="application-name" content="Askeladd">
+		<meta name="apple-mobile-web-app-title" content="Askeladd Admin">
+		<meta name="application-name" content="Askeladd Admin">
 		<meta name="msapplication-TileColor" content="#ff0000">
 		<meta name="msapplication-config" content="%sveltekit.assets%/browserconfig.xml">
 		<meta name="theme-color" content="#ff4352">
@@ -70,12 +70,11 @@
 			font-size: 1em;
 			font-weight: bold;
 		}
-		.le_button:hover{background:var(--main2)}
+		.le_button:hover{background:var(--text)}
 		.error {
 			color: var(--back);
 			background: var(--main1);
 			position: absolute;
-			z-index: 999999;
 			top: 16px;
 			left: 50%;
 			transform: translateX(-50%);
@@ -92,11 +91,11 @@
 			display: flex;
 			flex-shrink: 0;
 			flex-direction: column;
-			padding: var(--padding);
-			gap: var(--padding);
+			padding: 16px;
+			gap: 16px;
 			width: 320px;
 			overflow-y: scroll;
-			background-color: var(--tertiary);
+			background-color: var(--secondary);
 		}
 		aside button {
 			display: flex;
@@ -104,7 +103,7 @@
 			width: 100%;
 			padding: 12px;
 			border: none;
-			border-radius: var(--radius);
+			border-radius: 8px;
 			font-size: 16px;
 			line-height: 24px;
 			font-weight: 700;
@@ -112,13 +111,15 @@
 			background: var(--back);
 		}
 		aside button:hover {
-			background-color: var(--secondary);
+			background-color: var(--text);
+    		color: var(--back);
 		}
 		aside button:active {
 			transform: scale(0.95);
 		}
 		aside button:disabled {
-			background: var(--back);
+			background: var(--secondary);
+			color: var(--text);
 			transform: scale(1);
 		}
 		aside ul {
@@ -166,7 +167,7 @@
 		table input:focus,
 		table input:hover {
 			outline: none;
-			background: var(--back);
+			background: var(--secondary);
 		}
 
 		.button {
@@ -186,8 +187,20 @@
 		}
 
 		.button:disabled {
-			background: var(--main2);
+			background: var(--disabled);
 			scale: 1 !important;
+		}
+
+		.secondary {
+			padding: 6px 10px;
+			font-size: 16px;
+			border-radius: 12px;
+			border: 2px solid var(--text);
+			color: var(--text);
+			background: transparent;
+		}
+		.secondary:hover {
+			background: var(--secondary);
 		}
 
 		#dnd-action-dragged-el>a {
@@ -196,8 +209,6 @@
 		#dnd-action-dragged-el>a::before {
 			content: '-' !important;
 		}
-
-		/* Animación de carga al cargar documentos */
 		.lds-ring {
 			display: inline-block;
 			position: relative;
@@ -215,10 +226,10 @@
 			width: 16px;
 			height: 16px;
 			margin: 2px;
-			border: 2px solid var(--text);
+			border: 2px solid #fff;
 			border-radius: 50%;
 			animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-			border-color: var(--text) transparent transparent transparent;
+			border-color: #fff transparent transparent transparent;
 		}
 		.lds-ring.big-ring div {
 			width: 48px;
@@ -244,15 +255,16 @@
 				transform: rotate(360deg);
 			}
 		}
-
-		/* Para ocultar el diseño por defecto de los input[type=number] */
-		input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
-			-webkit-appearance: none;
-			margin: 0;
+		input::-webkit-outer-spin-button,
+		input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
 		}
+
+		/* Firefox */
 		input[type=number] {
-			-moz-appearance: textfield;
-			appearance: textfield;
+		-moz-appearance: textfield;
+		appearance: textfield;
 		}
 		</style>
 		%sveltekit.head%

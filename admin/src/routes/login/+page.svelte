@@ -35,51 +35,45 @@
 </script>
 
 <svelte:head>
-	<title>Askeladd - Login</title>
+	<title>Askeladd Admin - Login</title>
 </svelte:head>
 
-<div class="body">
-	<svg id="blob-1" width="540" height="540" viewBox="0 0 540 540" fill="none" xmlns="http://www.w3.org/2000/svg">
-		<path d="M539.38 0C540.947 63.7559 542.514 127.655 504.048 164.025C465.582 200.254 386.94 209.239 357.307 259.873C327.674 310.65 346.907 403.074 316.989 436.878C287.071 470.681 208.144 445.721 147.026 453.138C86.05 460.412 43.025 500.206 0 540V0H539.38Z" fill="var(--main1)"/>
-	</svg>
-	<svg id="blob-2" width="540" height="540" viewBox="0 0 540 540" fill="none" xmlns="http://www.w3.org/2000/svg">
-		<path d="M0 540C44.2155 493.645 88.5737 447.29 109.968 400.222C131.363 353.296 130.079 305.658 141.918 250.745C153.756 195.832 178.859 133.502 222.647 103.122C266.434 72.7417 328.906 74.3106 384.818 62.4723C440.872 50.6339 490.365 25.3883 540 0V540H0Z" fill="var(--main1)"/>
-	</svg>	
-	<main>
-		<header>
-			<h1>Askeladd</h1>
-			<h2>Sistema de Gestión de examenes</h2>
-		</header>
-		<form method="post" use:enhance={handleLogin}>
-			<Input
-				value={email}
-				type="text"
-				label="Correo Institucional"
-				id="email"
-				{error}
-			/>
-			<Input
-				type="password"
-				label="Contraseña"
-				id="password"
-				{error}
-			/>
-			<button class="button" type="submit" disabled={loading}>
-				{loading ? 'Cargando...' : 'Ingresar'}
-			</button>
-			<!-- Próximamente -->
-			<!-- <a href="/login">He olvidado mi contraseña</a> -->
-		</form>
-	</main>
-</div>
+<svg id="blob-1" width="540" height="540" viewBox="0 0 540 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<path d="M539.38 0C540.947 63.7559 542.514 127.655 504.048 164.025C465.582 200.254 386.94 209.239 357.307 259.873C327.674 310.65 346.907 403.074 316.989 436.878C287.071 470.681 208.144 445.721 147.026 453.138C86.05 460.412 43.025 500.206 0 540V0H539.38Z" fill="var(--main1)"/>
+</svg>
+
+<svg id="blob-2" width="540" height="540" viewBox="0 0 540 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<path d="M0 540C44.2155 493.645 88.5737 447.29 109.968 400.222C131.363 353.296 130.079 305.658 141.918 250.745C153.756 195.832 178.859 133.502 222.647 103.122C266.434 72.7417 328.906 74.3106 384.818 62.4723C440.872 50.6339 490.365 25.3883 540 0V540H0Z" fill="var(--main1)"/>
+</svg>
+
+<main>
+	<header>
+		<h1>Askeladd</h1>
+		<h2>Sistema de Gestión de examenes</h2>
+	</header>
+	<form method="post" use:enhance={handleLogin}>
+		<Input
+			value={email}
+			type="text"
+			label="Correo Institucional"
+			id="email"
+			{error}
+		/>
+		<Input
+			type="password"
+			label="Contraseña"
+			id="password"
+			{error}
+		/>
+		<button class="button" type="submit" disabled={loading}>
+			{loading ? 'Cargando...' : 'Ingresar'}
+		</button>
+		<!-- Próximamente -->
+		<!-- <a href="/login">He olvidado mi contraseña</a> -->
+	</form>
+</main>
 
 <style>
-	.body {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		overflow: hidden;
-	}
 	main {
 		min-height: 100vh;
 		min-height: 100dvh;
@@ -117,9 +111,7 @@
 	button:hover, button:disabled {
 		background: var(--main2);
 	}
-	/* 
-	Para el enlace a "He olvidado mi contraseña"
-	a {
+	/* a {
 		color: var(--main1);
 		text-align: center;
 		text-decoration: none;
@@ -128,6 +120,9 @@
 		outline: none;
 		text-decoration: underline;
 	} */
+	:global(body) {
+		overflow: hidden;
+	}
 
 	#blob-1, #blob-2 {			
 		display: block;

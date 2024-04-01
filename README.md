@@ -57,7 +57,7 @@ Si el departamento cuenta con suficiente presupuesto entonces también se puede 
 
 ### 2.2. Funcionamiento de la Aplicación
 
-
+Para ingresar a la aplicación, el usuario deberá primero iniciar sesión. Esta se sesión se mantendrá activa durante un mes aproximadamente, similar a las sesiones utilizadas por las redes sociales. Todo ingreso a cualquiera de las páginas sin autorización redirigirá automáticamente a la página de inicio de sesión o `/login`.
 
 ### 2.3. Aclaraciones sobre el cógido
 

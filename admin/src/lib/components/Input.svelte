@@ -31,7 +31,7 @@
 	}
 	input {
 		color: var(--text);
-		background: var(--tertiary);
+		background: var(--secondary);
 		border: none;
 		border-bottom: 2px solid var(--gray);
 		padding: 12px 16px 0px;
@@ -48,7 +48,7 @@
 	}
 	label {
 		position: absolute;
-		color: var(--text);
+		color: #9ab2af;
 		top: 50%;
 		transform: translateY(-50%);
 		padding-left: 16px;
