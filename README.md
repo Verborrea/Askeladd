@@ -59,9 +59,34 @@ Si el departamento cuenta con suficiente presupuesto entonces también se puede 
 
 Para ingresar a la aplicación, el usuario deberá primero iniciar sesión. Esta se sesión se mantendrá activa durante un mes aproximadamente, similar a las sesiones utilizadas por las redes sociales. Todo ingreso a cualquiera de las páginas sin autorización redirigirá automáticamente a la página de inicio de sesión o `/login`.
 
+La contraseña por defecto de cada profesor es su número de DNI, esta se puede cambiar después. Al ingresar, la página de Inicio conteiene un panel lateral para filtrar los examenes por periodo académico (2024-I, 2024-II, etc). A la derecha están las *cards* de cada examen del periodo seleccionado. Al hacer click, se ingresa al examen respectivo.
+
+Los examenes pueden tener 5 estados posibles:
+
+1. **En Blanco:** El estado por defecto en que se crean los examenes, indica que no tiene niguna pregunta guardada. Permite editar la preguntas del examen.
+2. **En Proceso:** Estado en el que se mantiene un examen mientras se editan sus preguntas. Si un examen "En Proceso" se guarda sin preguntas, volverá al estado "En Blanco".
+3. **Calificando:** Es el estado en el que se encuentran las evaluaciones que ya han sido o están siendo evaluadas, el profesor puede ir subiendo poco a poco las notas o subirlo desde una tabla en su portapapeles.
+4. **Digitalización:** Una vez subidas las evaluaciones el docente deberá subir 3 digitalizaciones: La evaluación con el puntaje más bajo, con el más alto y una con aproximadamente la media. En este estado no se pueden guardar los cambios, cada que el profesor suba un archivo, este guardará el estado del examen automáticamente.
+5. **Finalizado:** El estado del examen ya no es editable por el profesor, la GUI muestra las métricas de las puntaciones en cada pregunta y por cada SO.
+
+Al hacer click en un examen, se abrirá una de los siguientes 4 interfaces:
+
 ### 2.3. Aclaraciones sobre el cógido
 
-Este sí está bien hecho :')
+La carpeta `/static` contiene el ícono de la aplicación en distitnos tamaños, la fuente utilizada y su manifiesto Web para poder ser instalada.
+
+La carpeta `/src` contiene:
+- La carpeta `/lib`, donde están componentes y scripts que se usan a los largo de toda la aplicación.
+- La carpeta `/route` con las distintas rutas de la aplicación.
+- `app.html`: La plantilla de la aplicación
+- `hooks.server.js`: Valida la sesión del usuario en cada request que se haga al servidor.
+
+Como oportunidades de mejora se puede tomar:
+
+- Permitir el cambio de contraseña por parte de los usuarios.
+- Reducir el número de *requests* al servidor al guardar localmente o en caché los estados de los examenes que ya no sean editables (como los examenes finalizados) mediante el uso del localStorage o algúna otra tecnología.
+- ETAPA 2: Añadir un constructor de examenes en PDF que cree el examen y opcionalmente muestre una vista previa mientras se crea el examen.
+- ETAPA 3: Uniformización de los examenes y evaluación automática computarizada.
 
 > [!NOTE]  
 > Si el backend corre en otro servidor que no sea el local, cambiar la dirección de http://127.0.0.1:8090/ a la nueva en los siguientes archivos: `/hooks.server.js`, `routes/[examId]/EditExam.svelte` y `routes/[examId]/Upload.svelte`
