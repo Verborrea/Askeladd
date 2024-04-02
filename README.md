@@ -71,6 +71,49 @@ Los examenes pueden tener 5 estados posibles:
 
 Al hacer click en un examen, se abrirá una de los siguientes 4 interfaces:
 
+1. **Interfaz de Edición:**
+
+   Contiene una barra lateral izquierda con una sección de drag and drop para seleccionar o cambiar de lugar las preguntas, un botón para añadir preguntas y otro para pasar al siguiente estado. **Es importante que todas las preguntas sumen 20 puntos y que ninguna esté en blanco para esto**.
+
+   Cada pregunta está compuesta por:
+
+   - Un enunciado
+   - Una imagen (opcional)
+   - Los Student Outcomes que califica
+   - Un puntaje positivo menor que 20 puntos
+
+   Cada pregunta debe evaluar al menos un Student Outcome, si solamente tiene uno este no se podra deseleccionar. Al subir una imagen con el botón `Añadir imagen (opcional)`, este se cambiará por el botón `Borrar Imagen`. Las imagenes no se suben al servidor hasta que se guarde el examen. Hay un botón en la esquina derecha del editor que permite borrar la pregunta actualmente seleccionada.
+
+2. **Interfaz de calificación**
+
+   Esta interfaz también contiene una barra lateral, solo que ahora las preguntas son fijas y hacer click en ellas o arrastrarlas no tendrá ningún efecto. Abajo hay dos botones, uno para ir a la siguiente etapa y otro para subir una tabla desde el portapapeles.
+
+   En el centro se encuentra una tabla junto con un botón para añadir filas. La tabla tiene las siguientes columnas:
+
+   - Código
+   - Nombres
+   - Apellidos
+
+   Adicionalmente hay una columna por cada pregunta del examen donde se coloca el puntaje que sacó el alumno de la fila. Si la calificación es mayor al puntaje de la pregunta saldrá una alerta de error y se redondeará el puntaje a uno válido.
+
+3. **Interfaz de subida de digitalizaciones**
+
+   Esta es la interfaz más simple de todas, consiste en tres componentes de subida de archivos para las tres digitalizaciones necesarias. En el panel lateral hay un solo botón que cambia el estado del examen, no es posible avanzar a la siguiente etapa sin antes haber subido los 3 documentos. No es posible guardar los cambios ya que al subir los archivos, estos se suben directamente a la BD.
+
+4. **Interfaz de métricas**
+
+   Aquí se muestran 3 tablas junto al resumen de cada pregunta. La primera indica el puntaje que obtuvo cada estudiante que fue evaluado por SO. Si el recuadro se encuntra en el color de énfasis (rojo por defecto) significa que desaprobó en dicha SO. La segunda tabla (lado inferior izquierdo) contiene un resumen de los SO, indicando:
+
+   - Puntaje Máximo
+   - Promedio
+   - Puntaje Mínimo
+   - Pocentaje de Aprobados
+   - Si son necesarias acciones de mejora y en cuales SO (menos del 50% de aprobados)
+
+   La tercera tabla indica un resumen de la evaluación correspondiente a las preguntas individuales, indicando su puntaje máximo, mínimo y un promedio.
+
+De momento, las credenciales de cada profesor son únicamente controladas por el administrador.
+
 ### 2.3. Aclaraciones sobre el cógido
 
 La carpeta `/static` contiene el ícono de la aplicación en distitnos tamaños, la fuente utilizada y su manifiesto Web para poder ser instalada.
@@ -83,6 +126,7 @@ La carpeta `/src` contiene:
 
 Como oportunidades de mejora se puede tomar:
 
+- Permitir una previsualización de las preguntas en todas las interfaces, no solo en la de edición.
 - Permitir el cambio de contraseña por parte de los usuarios.
 - Reducir el número de *requests* al servidor al guardar localmente o en caché los estados de los examenes que ya no sean editables (como los examenes finalizados) mediante el uso del localStorage o algúna otra tecnología.
 - ETAPA 2: Añadir un constructor de examenes en PDF que cree el examen y opcionalmente muestre una vista previa mientras se crea el examen.
