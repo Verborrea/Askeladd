@@ -1,17 +1,15 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/stores'
+	import { periods } from '$lib/utils.js'
 		
-	export let periodos = [];
-
-	let year, type
-	$: (year = $page.url.searchParams.get("year") ?? '')
-	$: (type = $page.url.searchParams.get("type") ?? '')
+	let semester
+	$: (semester = $page.url.searchParams.get("semester") ?? '')
 </script>
 
 <nav>
 	<ul>
 		<li>
-			<a href="/exams" aria-current={!year}>
+			<a href="/exams" aria-current={!semester}>
 				Todos los periodos
 				<svg class="HoverArrow" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
 					<g fill-rule="evenodd">
@@ -21,26 +19,22 @@
 				</svg>
 			</a>
 		</li>
-		{#await periodos}
-			<p class="cargando">Cargando...</p>
-		{:then _p}
-			{#each _p as periodo}
-				<li>
-					<a
-						href={`?year=${periodo.year}&type=${periodo.type}`}
-						aria-current={year === periodo.year && type === periodo.type}
-					>
-						{periodo.year} - {periodo.type}
-						<svg class="HoverArrow" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-							<g fill-rule="evenodd">
-								<path class="HoverArrow__linePath" d="M0 5h7"></path>
-								<path class="HoverArrow__tipPath" d="M1 1l4 4-4 4"></path>
-							</g>
-						</svg>
-					</a>
-				</li>
-			{/each}
-		{/await}
+		{#each periods as sem}
+			<li>
+				<a
+					href={`?semester=${sem}`}
+					aria-current={sem === semester}
+				>
+					{sem}
+					<svg class="HoverArrow" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+						<g fill-rule="evenodd">
+							<path class="HoverArrow__linePath" d="M0 5h7"></path>
+							<path class="HoverArrow__tipPath" d="M1 1l4 4-4 4"></path>
+						</g>
+					</svg>
+				</a>
+			</li>
+		{/each}
 	</ul>
 </nav>
 

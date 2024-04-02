@@ -176,3 +176,23 @@ Como oportunidades de mejora se puede tomar:
 ### 3.1. Instalación
 
 La Instalación sigue los mismos pasos que la de la aplicación para profesores debido a que fue creada de la misma forma. Todo el código fuente se encuentra en la carpeta `/admin`.
+
+### 3.2. Funcionamiento de la Aplicación
+
+El inicio de sesión es similar al de la aplicación para profesores. Una vez el usuario ingresa al sistema verá 5 accesos directos:
+
+1. **Cursos**:
+   
+   asfasf
+2. **Docentes**:
+
+   safasf
+3. **Asignar Cursos**:
+
+   asf
+4. **Restaurar Evaluaciones**:
+
+   asf
+5. **Métricas**:
+   
+   Para observar las métricas de un grupo, un curso o todos los cursos de un semestre como las notas promedio y el porcentaje de aprobados.

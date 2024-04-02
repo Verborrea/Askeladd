@@ -2,12 +2,10 @@
 	import Header from "$lib/components/Header.svelte"
 	import StudentsTable from "./StudentsTable.svelte"
 	import CourseTable from "./CourseTable.svelte"
-	import { json } from "@sveltejs/kit"
-	import { obtenerClavesUnicasOrdenadas } from "$lib/utils"
+	import { periods, obtenerClavesUnicasOrdenadas } from "$lib/utils"
 
 	export let data
 	
-	let periods = ['2024-I']
 	let semesters = ['Todos los semestres','1','2','3','4','5','6','7','8','9','10']
 	let courses = ['Todos los cursos', ...data.courses.map(c => c.name)]
 	let groups = []
@@ -71,7 +69,6 @@
 		if (course_id === 'Todos los cursos') {
 			matrix = result_json
 			showing = 'Cursos'
-			console.log(matrix)
 		} else {
 			lista_SO = obtenerClavesUnicasOrdenadas(result_json)
 			matrix = result_json
@@ -165,7 +162,7 @@
 	select {
 		flex: 1;
 		border-radius: 10px;
-		background: var(--secondary);
+		background: var(--tertiary);
 		border: 0;
 		padding: 8px;
 		font-size: 16px;

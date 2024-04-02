@@ -1,3 +1,6 @@
+export const periods = ['2023-II', '2024-I']
+
+
 export function findHighestId(items) {
 	return items.reduce((maxId, item) => {
 		if (item.id > maxId) {

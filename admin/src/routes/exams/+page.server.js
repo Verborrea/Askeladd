@@ -5,17 +5,12 @@ export async function load({ url, locals }) {
 		throw redirect(307, '/login')
 	}
 
-	const year = url.searchParams.get("year");
-	const type = url.searchParams.get("type");
+	const semester = url.searchParams.get("semester");
 
 	let filter = ''
 
-	if (year) {
-		filter += `group.semester~"${year}"`
-	}
-
-	if (type) {
-		filter += `&&group.semester~"${type}"`
+	if (semester) {
+		filter += `group.semester~"${semester}"`
 	}
 
 	const records = await locals.pb.collection('exams').getFullList({
@@ -24,10 +19,6 @@ export async function load({ url, locals }) {
 	});
 
 	return {
-		periodos: [
-			{ year: '2023', type: 'II' },
-			{ year: '2024', type: 'I' }
-		],
 		exams: records,
 	}
 }

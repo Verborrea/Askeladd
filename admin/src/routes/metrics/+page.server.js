@@ -41,7 +41,6 @@ export const actions = {
 	setSemester: async ({ locals, request }) => {
 		const data = await request.formData();
 		let results = courses.filter((c) => c.semester === data.get('semester'))
-		console.log(results)
 		return {
 			courses: results,
 			selection: data.get('semester')

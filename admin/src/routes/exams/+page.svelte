@@ -13,7 +13,7 @@
 <div class="body">
 	<aside>
 		<a href="/" class="logo">Askeladd</a>
-		<Periodos periodos={data.periodos} />
+		<Periodos />
 	</aside>
 	<article>
 		<Header text="Admin | Evaluaciones" />
