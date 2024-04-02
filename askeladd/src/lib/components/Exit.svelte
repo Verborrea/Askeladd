@@ -1,3 +1,5 @@
+<!-- Botón de salida: ya sea para cerrar sesión o para regresar a la pantalla principal -->
+
 <script>
 	export let text, link = false
 </script>

@@ -1,3 +1,5 @@
+<!-- La pregunta que se muestra en la lista de preguntas de la barra lateral izquierda -->
+
 <script>
 	export let pregunta
 </script>

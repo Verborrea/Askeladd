@@ -71,7 +71,7 @@ Los examenes pueden tener 5 estados posibles:
 
 Al hacer click en un examen, se abrirá una de los siguientes 4 interfaces:
 
-1. **Interfaz de Edición:**
+1. **Interfaz de edición:**
 
    Contiene una barra lateral izquierda con una sección de drag and drop para seleccionar o cambiar de lugar las preguntas, un botón para añadir preguntas y otro para pasar al siguiente estado. **Es importante que todas las preguntas sumen 20 puntos y que ninguna esté en blanco para esto**.
 
@@ -119,10 +119,46 @@ De momento, las credenciales de cada profesor son únicamente controladas por el
 La carpeta `/static` contiene el ícono de la aplicación en distitnos tamaños, la fuente utilizada y su manifiesto Web para poder ser instalada.
 
 La carpeta `/src` contiene:
+
 - La carpeta `/lib`, donde están componentes y scripts que se usan a los largo de toda la aplicación.
 - La carpeta `/route` con las distintas rutas de la aplicación.
 - `app.html`: La plantilla de la aplicación
 - `hooks.server.js`: Valida la sesión del usuario en cada request que se haga al servidor.
+
+Dentro de `/lib` podemos encontrar:
+
+- La carpeta components, con componentes de Svelte reutilizados (en su mayoría) en toda la aplicación. Cada componente está debidamente comentado para explicar su función o lugar de uso.
+- El archivo `stores.js` con dos Svelte Stores: `semester` para filtrar los examenes en la página de inicio y `error_message` con el mensaje de error en las interfaces de los exámenes.
+- El script `utils.js` con funciones auxiliares.
+
+Dentro de `/routes` están las distintas rutas así como archivos de carga de datos y manejo de acciones POST. Revisar la [documentación de Svelte](https://kit.svelte.dev/docs/routing) para una explicación más a detalle de cada tipo de archivo encontrado en la carpeta.
+
+A grandes rasgos, aquí se encuentran:
+
+- `+layout.server.js` se encarga de redirigir al Login si el usuario no está logeado.
+- `+page.server.js` carga los datos de la página de Inicio: el nombre del profesor y los examenes que le corresponden.
+- `+page.svelte`, `+error.svelte`, `Header.svelte`: la página principal, la plantilla de errores de la aplicación y el componente de la cabecera de la página de Inicio respectivamente. 
+- La carpeta `/login` y  `/logout` que se encargan de manejar las sesiones del usuario.
+- La carpeta `/[examId]` que indica una ruta dinámica según la **ID** del examen.
+
+En esta última carpeta se encuentra el *core* de la aplicación.
+
+- `+page.server.js`: Carga la información completa del examen desde Pocketbase y maneja todas las acciones de cada interfaz.
+- `+page.svelte`: Renderiza la interfaz adecuada según el estado del examen y muestra los errores.
+- `EditExam.svelte`: Contiene a la Interfaz de edición.
+- `GradeExam.svelte`: Contiene a la Interfaz de calificación.
+- `UploadExam.svelte`: Contiene a la Interfaz de subida de digitalizaciones.
+- `Metrics.svelte`: Contiene a la Interfaz de métricas.
+
+Adicionalmente también se encuentran estos archivos:
+
+- `EditHeader.svelte`: Componente similar al `Header.svelte` de la carpeta lib creado con el propósito de convertir los formAction a solicitudes fetch en la interfaz de edición a la hora de subir y borrar imagenes para reducir el número de consultas al servior.
+- `Examen.svelte`: Contiene el Resumen de la Evaluación de la Interfaz de métricas.
+- `Pregunta.svelte`: El componente Pregunta especial de la Interfaz de edición ya que debe modificar partes del editor de cada pregunta.
+- `Resumen.svelte`: Contiene el Resumen de los SO calificados de la Interfaz de métricas.
+- `Upload.svelte`: Contiene el elemento drop o seleccionador de documentos para la Interfaz de digitalizaciones.
+
+### 2.4. Trabajo Futuro
 
 Como oportunidades de mejora se puede tomar:
 

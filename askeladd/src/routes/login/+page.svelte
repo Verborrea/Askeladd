@@ -1,5 +1,5 @@
 <script>
-	import Input from "$lib/components/Input.svelte"
+	import Input from "./Input.svelte"
 	import { enhance } from "$app/forms"
 
 	export let form;

@@ -1,3 +1,5 @@
+<!-- Header para las distintas interfaces de un examen -->
+
 <script>
 	import { enhance } from "$app/forms"
     import Exit from "$lib/components/Exit.svelte"
