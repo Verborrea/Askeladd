@@ -115,6 +115,12 @@ export const actions = {
 		}
 	},
 	finalizar: async ({ locals, params }) => {
+		const exam = await locals.pb.collection("exams").getOne(params.examId)
+
+		if (!exam.lowest || !exam.average || !exam.highest) {
+			return fail(400, { message: "Debe subir los 3 documentos antes de continuar." })
+		}
+
 		await locals.pb.collection("exams").update(params.examId, {
 			status: "Finalizado"
 		})

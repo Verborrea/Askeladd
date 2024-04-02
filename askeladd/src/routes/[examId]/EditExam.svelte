@@ -135,14 +135,24 @@
 
 		formData.append('items', JSON.stringify(items))
 
-		await fetch($page.url.origin + $page.url.pathname + '?/subirNotas', {
+		const response = await fetch($page.url.origin + $page.url.pathname + '?/subirNotas', {
 			method: 'POST',
 			body: formData
 		})
 
-		subirNotasLoading = false
+		const results = await deserialize(await response.text())
 
-		location.reload()
+		if (results.status === 400) {
+			if (items.find(i => i.pts === 0)) {
+				$error_message = 'No pueden haber preguntas vacías'
+			} else {
+				$error_message = 'Las preguntas deben sumar 20 puntos'
+			}
+		} else {
+			location.reload()
+		}
+
+		subirNotasLoading = false
 	}
 
 	const soloNumeros = (e) => {

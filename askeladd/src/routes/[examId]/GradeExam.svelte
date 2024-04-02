@@ -272,5 +272,8 @@
 		main {
 			padding: 0 16px 16px;
 		}
+		article {
+			overflow: unset;
+		}
 	}
 </style>
