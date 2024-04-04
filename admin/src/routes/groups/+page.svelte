@@ -119,6 +119,7 @@
 		</form>
 		<button type="button" on:click={pegarTabla}>Subir desde portapapeles</button>
 		<form action="?/exams" method="post" use:enhance={exams}>
+			<input type="hidden" name="semester" value={selected_semester}>
 			<button type="submit" disabled={examsLoading}>
 				{#if examsLoading}
 					Cargando...
@@ -143,7 +144,7 @@
 						<th scope="col">Código</th>
 						<th scope="col">Curso</th>
 						<th scope="col">Profesores</th>
-						<th scope="col">Semestre</th>
+						<th scope="col">Periodo</th>
 					</tr>
 				</thead>
 				<tbody>

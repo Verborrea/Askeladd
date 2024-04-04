@@ -179,20 +179,57 @@ La Instalación sigue los mismos pasos que la de la aplicación para profesores 
 
 ### 3.2. Funcionamiento de la Aplicación
 
-El inicio de sesión es similar al de la aplicación para profesores. Una vez el usuario ingresa al sistema verá 5 accesos directos:
+El inicio de sesión es similar al de la aplicación para profesores. Una vez el usuario ingresa al sistema verá 5 accesos directos para acceder a las distintas interfaces de control:
 
 1. **Cursos**:
    
-   asfasf
-2. **Docentes**:
+   Aquí se adminsitran los cursos, la barra lateral izquierda permite: **Guardar** nuestros cambios, **Pegar desde portapapeles** una tabla ya creada o **Cargar Docentes** para avanzar a la siguiente interfaz de control. La tabla permite añadir, editar o eliminar cursos, los cuales tienen los siguientes campos:
 
-   safasf
+   - **Código** (ejem: CS101)
+   - **Nombre** (ejem: Matemática II)
+   - **Outcomes** (ejem: 1,2,5,7)
+   - **Currícula** (ejem: 2018)
+   - **Semestre** (ejem: 2)
+
+2. **Docentes / Usuarios**:
+
+   De manera similar a la anterior interfaz, aquí se adminsitran los docentes que enseñaran los cursos y que serán los usuarios de la aplicación para profesores. Las opciones de la barra lateral son las mismas. Ahora, la tabla contendrá los siguientes campos:
+
+   - **DNI** (ejem: 72385514)
+   - **Nombre** (ejem: Andrea Alejandra)
+   - **Apellidos** (ejem: Apaza Abarca)
+   - **Correo** (ejem: aapaza@ucsp.edu.pe)
+   - **Sexo** (ejem: Femenino)
+
 3. **Asignar Cursos**:
 
-   asf
+   Esta interfaz guarda similaridad con las dos anteriores excepto por lo siguiente: Un selector de periodos para seleccionar el periodo académico al que pertenecen los grupos de la tabla. El botón para **Crear Evaluaciones** en la barra lateral izquierda que genera nuevos examenes para todos los grupos mostrados en la tabla. Los campos de la tabla son estos:
+
+   - **Código** (ejem: CCOMP1-1)
+   - **Curso** (ejem: CS101)
+   - **Profesores** (ejem: Luis Díaz Basurco)
+   - **Periodo** (ejem: 2023-II, **no editable**)
+   
+   Al cambiar los campos `Curso` o `Profesores`se abriran ventanas superpuestas para seleccionar uno de los anteriores.
+
 4. **Restaurar Evaluaciones**:
 
-   asf
+   Ahora bien, la interfaz de evaluaciones es notoriamente diferente a las otras. Aquí es solo posible restaurar las evaluaciones a un estado anterior, esto debido a que el administrador no debe tener acceso a editar las calificaciones de un examen a menos que el docente del curso lo solicite por algún error cometido.
+
+   En el panel lateral se encuentra un selector de periodos para agrupar los examenes. Cada examen posee un recuadro con sus datos y 3 opciones parar retornar al examen a un estado anterior. Estas opciones son:
+
+   - Restaurar páginas
+   - Restaurar calificaciones
+   - Restaurar archivos
+
 5. **Métricas**:
    
-   Para observar las métricas de un grupo, un curso o todos los cursos de un semestre como las notas promedio y el porcentaje de aprobados.
+   Con esta interfaz el administrador podrá observar las métricas de un grupo, un curso o todos los cursos de un semestre como las notas promedio y el porcentaje de aprobados. En el panel lateral puuede agrupar las evaluaciones por periodo académico, semestre, curso y grupo (una vez elegido el curso). Una vez seleccionados los filtros, en el lado derecho podrá ver dos tablas.
+
+### 3.3. Aclaraciones sobre el cógido
+
+
+
+### 3.4. Trabajo Futuro
+
+Como oportunidades de mejora se puede tomar:

@@ -100,10 +100,15 @@ export const actions = {
 			}
 		}
 	},
-	exams: async ({ locals }) => {
+	exams: async ({ locals, request }) => {
+
+		const data = await request.formData()
+		const semester = data.get('semester')
+		
 		const groups = await locals.pb.collection('groups').getFullList({
 			expand: 'course',
-			fields: 'id,semester,expand.course.name'
+			fields: 'id,semester,expand.course.name',
+			filter: `semester='${semester}'`
 		});
 
 		for (const group of groups) {
