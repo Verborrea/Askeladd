@@ -36,14 +36,3 @@ export async function load({ locals }) {
 		groups: groups.map(g => parseGroups(g)),
 	}
 }
-
-export const actions = {
-	setSemester: async ({ locals, request }) => {
-		const data = await request.formData();
-		let results = courses.filter((c) => c.semester === data.get('semester'))
-		return {
-			courses: results,
-			selection: data.get('semester')
-		};
-	}
-};

@@ -4,26 +4,30 @@ import { calcularPromedioSO, obtenerAprobados } from "$lib/utils"
 export async function GET({ locals, url }) {
 	let show_courses = false
 
-	let period = url.searchParams.get('period') 	// siempre existe
-	let cs = url.searchParams.get('cs')	// 1,2,3
-	let course = url.searchParams.get('course')		// todos o uno
-	let group = url.searchParams.get('group')		// todos o uno
+	let period = url.searchParams.get('period')
+	let courses = url.searchParams.get('courses')?.split(',')
+	let group_id = url.searchParams.get('group_id')
 
-	let filter = `semester='${period}'`
+	let exams
 
-	if (course !== 'Todos los cursos') {
-		filter += `&&course='${course}'`
+	if (group_id) {
+		exams = await locals.pb.collection('exams').getFullList({
+			filter: `group = '${group_id}'`,
+			fields: 'grades, max_so'
+		})
 	} else {
-		filter += `&&`
-		filter += cs.split(',').map((c) => `course='${c}'`).join("||"),
-		show_courses = true
-	}
+		let filter = courses.map((c) => `group.course = '${c}'`).join("||")
 
-	if (group !== '' && group !== 'Todos los grupos') {
-		filter += `&&code='${group}'`
+		// Conseguir los examenes de esos grupos
+		exams = await locals.pb.collection('exams').getFullList({
+			filter: filter + `&& group.semester='${period}'`,
+			fields: 'grades, max_so, group'
+		});
+
+		// para activar la visualización de varios cursos
+		show_courses = courses.length > 1
 	}
 	
-
 	// Si se muestra la tabla de cursos, entonces agrupar x cursos
 	// TODO: convertir en GROUP BY en SQL
 	if (show_courses) {
@@ -111,21 +115,6 @@ export async function GET({ locals, url }) {
 		return json(ultima)
 	}
 
-	// DEVOLVER TABLA DE ESTUDIANTES
-	let groups = await locals.pb.collection('groups').getFullList({
-		filter,
-		fields: 'id'
-	});
-
-	if (groups.length === 0) {
-		return json([]);
-	}
-
-	let exams = await locals.pb.collection('exams').getFullList({
-		filter: groups.map((g) => `group='${g.id}'`).join("||"),
-		fields: 'grades, max_so'
-	});
-
 	// Normalizar los puntajes en cada SO para que estén sobre 20
 	exams.forEach(exam => {
 		exam.grades.forEach(g => {
@@ -134,6 +123,8 @@ export async function GET({ locals, url }) {
 			}
 		})
 	});
+
+	console.log(exams[1].grades[0])
 
 	// Reducir los examenes a un único array de calificaciones
 	const grades = exams.reduce((accumulator, currentExam) => {

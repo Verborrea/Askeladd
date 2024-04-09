@@ -228,7 +228,7 @@ El inicio de sesión es similar al de la aplicación para profesores. Una vez el
 
 ### 3.3. Aclaraciones sobre el cógido
 
-
+ 
 
 ### 3.4. Trabajo Futuro
 

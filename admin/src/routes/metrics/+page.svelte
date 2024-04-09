@@ -5,6 +5,8 @@
 	import { periods, obtenerClavesUnicasOrdenadas } from "$lib/utils"
 
 	export let data
+
+	let complete_groups = []
 	
 	let semesters = ['Todos los semestres','1','2','3','4','5','6','7','8','9','10']
 	let courses = ['Todos los cursos', ...data.courses.map(c => c.name)]
@@ -30,68 +32,89 @@
 		} else {
 			courses = ['Todos los cursos', ...data.courses.filter((c) => c.semester === selected_semester).map(c => c.name)]
 		}
-		selected_course = courses[0]
-		groups = []
+		selected_course = 'Todos los cursos'
+		groups = [] // Reinicia el select de Grupos ya que no hay un curso seleccionado
 	}
 
 	const setCourse = async () => {
+		
+		// Borrar los grupos si no se selecciona ningún curso
 		if (selected_course === 'Todos los cursos') {
 			groups = []
 			selected_group = ''
 			return
 		}
+
+		// Caso contrario llamar a get_groups para obtener códigos y IDs
 		let selected_course_id = data.courses.find((c) => c.name === selected_course).id
-		const response = await fetch(`/metrics/api?course=${selected_course_id}`, {
+		const response = await fetch(`/metrics/get_groups?course=${selected_course_id}`, {
 			method: 'GET'
 		});
+		complete_groups = await response.json();
 
-		let fetch_groups = await response.json();
-
-		groups = ['Todos los grupos', ...fetch_groups.map(g => g.code)]
-		selected_group = groups[0]
+		groups = ['Todos los grupos', ...complete_groups.map(g => g.code)]
+		selected_group = 'Todos los grupos'
 	}
 
 	const search = async () => {
-		// let group_code = 'Todos los grupos'
-		let course_id = 'Todos los cursos'
-		if (selected_course !== 'Todos los cursos') {
-			course_id = data.courses.find((c) => c.name === selected_course).id
-		}
 
-		let cs = data.courses.filter((c) => selected_semester === 'Todos los semestres' ? true : (c.semester === selected_semester)).map(c => c.id)
+		let parameters = {}
 
-		const response = await fetch(`/metrics/matrix?period=${selected_period}&cs=${cs}&course=${course_id}&group=${selected_group}`, {
-			method: 'GET'
-		});
-
-		let result_json = await response.json()
-
-		if (course_id === 'Todos los cursos') {
-			matrix = result_json
-			showing = 'Cursos'
+		// Si ya hay un grupo seleccionado => mandar su id de frente
+		// Caso contrario => mandar un array de cursos y el periodo
+		if (selected_group && selected_group !== 'Todos los grupos') {
+			let group_id = complete_groups.find((g) => g.code === selected_group).id
+			parameters.group_id = group_id
 		} else {
-			lista_SO = obtenerClavesUnicasOrdenadas(result_json)
-			matrix = result_json
-			showing = 'Estudiantes'
-
-			let temp_dict = {}, another = []
-
-			for (const so of lista_SO) {
-				temp_dict[so] = 0
-			}
-
-			for (const exam of matrix) {
-				for (const so in exam.so) {
-					temp_dict[so] += exam.so[so]
+			parameters.period = selected_period
+			parameters.courses = []
+			if (selected_course === 'Todos los cursos') {
+				let nameToId = {}
+				for (let course of data.courses) {
+					nameToId[course.name] = course.id
 				}
+				parameters.courses = courses.slice(1).map(nombre => nameToId[nombre])
+			} else {
+				let course_id = data.courses.find((c) => c.name === selected_course).id
+				parameters.courses.push(course_id)
 			}
-
-			for (const so of lista_SO) {
-				another.push(temp_dict[so] / matrix.length)
-			}
-
-			porcentajes = another
 		}
+
+		// Llamar al servidor para obtener los datos requeridos
+		const searchParams = new URLSearchParams(parameters)
+		const response = await fetch(`/metrics/matrix?${searchParams.toString()}`, {
+			method: 'GET'
+		})
+		const result_json = await response.json()
+
+		console.log(result_json)
+
+		// if (course_id === 'Todos los cursos') {
+		// 	matrix = result_json
+		// 	showing = 'Cursos'
+		// } else {
+		// 	lista_SO = obtenerClavesUnicasOrdenadas(result_json)
+		// 	matrix = result_json
+		// 	showing = 'Estudiantes'
+
+		// 	let temp_dict = {}, another = []
+
+		// 	for (const so of lista_SO) {
+		// 		temp_dict[so] = 0
+		// 	}
+
+		// 	for (const exam of matrix) {
+		// 		for (const so in exam.so) {
+		// 			temp_dict[so] += exam.so[so]
+		// 		}
+		// 	}
+
+		// 	for (const so of lista_SO) {
+		// 		another.push(temp_dict[so] / matrix.length)
+		// 	}
+
+		// 	porcentajes = another
+		// }
 	}
 </script>
 
