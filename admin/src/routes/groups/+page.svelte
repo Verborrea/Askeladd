@@ -4,12 +4,13 @@
 	import RadioButton from './RadioButton.svelte'
 	import { enhance } from "$app/forms";
 	import { fly } from 'svelte/transition';
-	import { generateId } from "$lib/utils";
+	import { periods, generateId } from "$lib/utils";
 
 	export let data
 	
 	let subirLoading = false, examsLoading = false
 	let error_message = ''
+	let allSelected = false
 
 	$: if (error_message != '') {
 		setTimeout(function() {
@@ -22,22 +23,30 @@
 	const courses = data.courses
 	let groups = data.groups
 
-	const semesters = [
-		'2023-II',
-		'2024-I'
-	]
+	let selected_period = periods[0]
 
-	let selected_semester = semesters[0]
+	function toggleAll() {
+		groups = groups.map(g => ({ ...g, selected: allSelected }));
+	}
 
-	const addGroup = () => {
+	function toggleSelection() {
+		allSelected = groups.every(g => g.selected)	
+	}
+
+	function addGroup() {
 		groups = [...groups, {
 			id: generateId(),
 			code: '',
 			course: '',
 			professors: [],
-			semester: selected_semester
+			semester: selected_period,
+			selected: allSelected
 		}]
 	}
+
+	function deleteGroups() {
+		groups = groups.filter((r) => r.selected === false)
+	} 
 
 	const subir = ({ cancel }) => {
 		subirLoading = true
@@ -54,12 +63,12 @@
 		return async ({ update }) => {update(); subirLoading = false;}
 	}
 
-	const exams = () => {
+	function exams() {
 		examsLoading = true
 		return async ({ update }) => {update(); examsLoading = false;}
 	}
 
-	const pegarTabla = () => {
+	function pegarTabla () {
 		navigator.clipboard.readText()
 		.then(function(clipboardText) {
 			const lineas = clipboardText.split('\n');
@@ -73,7 +82,8 @@
 						code: partes[0],
 						course: partes[1],
 						professors: partes[2].split(', '),
-						semester: partes[3]
+						semester: partes[3],
+						selected: false
 					})
 				}
 			});
@@ -95,13 +105,34 @@
 			{error_message}
 		</span>
 	{/if}
+	{#if groups.filter(g => g.selected).length}
+		<span class="info" transition:fly={{ y: -100, duration: 700 }}>
+			<p>{groups.filter(g => g.selected).length} Filas seleccionadas</p>
+			<div class="flex">
+				<form action="?/exams" method="post" use:enhance={exams}>
+					<input type="hidden" name="semester" value={selected_period}>
+					<input type="hidden" name="courses" value={JSON.stringify(courses)} />
+					<input type="hidden" name="professors" value={JSON.stringify(professors)} />
+					<input type="hidden" name="groups" value={JSON.stringify(groups)} />
+					<button type="submit" disabled={examsLoading} class="red">
+						{#if examsLoading}
+							Cargando...
+						{:else}
+							Crear Evaluaciones
+						{/if}
+					</button>
+				</form>
+				<button type="button" on:click={deleteGroups}>Borrar</button>
+			</div>
+		</span>
+	{/if}
 	<aside>
 		<a href="/" class="logo">Askeladd</a>
 		<label for="semester">
 			<h3>Periodo:</h3>
-			<select id="semester" bind:value={selected_semester}>
-				{#each semesters as semester}
-					<option value={semester}>{semester}</option>
+			<select id="semester" bind:value={selected_period} on:change={toggleAll}>
+				{#each periods as period}
+					<option value={period}>{period}</option>
 				{/each}
 			</select>
 		</label>
@@ -118,16 +149,6 @@
 			</button>
 		</form>
 		<button type="button" on:click={pegarTabla}>Subir desde portapapeles</button>
-		<form action="?/exams" method="post" use:enhance={exams}>
-			<input type="hidden" name="semester" value={selected_semester}>
-			<button type="submit" disabled={examsLoading}>
-				{#if examsLoading}
-					Cargando...
-				{:else}
-					Crear Evaluaciones
-				{/if}
-			</button>
-		</form>
 		<button type="button" on:click={()=>{window.location.href='/exams'}}>Ver Evaluaciones</button>
 	</aside>
 	<article>
@@ -136,11 +157,7 @@
 			<table>
 				<thead>
 					<tr>
-						<th scope="col">
-							<svg height="20" viewBox="0 -960 960 960" width="20">
-								<path fill="var(--text)" d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-12q-15.3 0-25.65-10.289-10.35-10.29-10.35-25.5Q192-747 202.35-757.5 212.7-768 228-768h156v-12q0-15.3 10.35-25.65Q404.7-816 420-816h120q15.3 0 25.65 10.35Q576-795.3 576-780v12h156q15.3 0 25.65 10.289 10.35 10.29 10.35 25.5Q768-717 757.65-706.5 747.3-696 732-696h-12v479.566Q720-186 698.85-165 677.7-144 648-144H312Zm107.789-144Q435-288 445.5-298.35 456-308.7 456-324v-264q0-15.3-10.289-25.65-10.29-10.35-25.5-10.35Q405-624 394.5-613.65 384-603.3 384-588v264q0 15.3 10.289 25.65 10.29 10.35 25.5 10.35Zm120 0Q555-288 565.5-298.35 576-308.7 576-324v-264q0-15.3-10.289-25.65-10.29-10.35-25.5-10.35Q525-624 514.5-613.65 504-603.3 504-588v264q0 15.3 10.289 25.65 10.29 10.35 25.5 10.35Z"/>
-							</svg>
-						</th>
+						<th scope="col"><input type="checkbox" bind:checked={allSelected} on:change={toggleAll}></th>
 						<th scope="col">Código</th>
 						<th scope="col">Curso</th>
 						<th scope="col">Profesores</th>
@@ -149,17 +166,9 @@
 				</thead>
 				<tbody>
 				{#each groups as row}
-					{#if row.semester === selected_semester}
+					{#if row.semester === selected_period}
 					<tr>
-						<td>
-							<button type="button" on:click={()=>{
-								groups = groups.filter((r) => r !== row)
-							}}>
-								<svg height="20" viewBox="0 -960 960 960" width="20">
-									<path fill="var(--text)" d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-12q-15.3 0-25.65-10.289-10.35-10.29-10.35-25.5Q192-747 202.35-757.5 212.7-768 228-768h156v-12q0-15.3 10.35-25.65Q404.7-816 420-816h120q15.3 0 25.65 10.35Q576-795.3 576-780v12h156q15.3 0 25.65 10.289 10.35 10.29 10.35 25.5Q768-717 757.65-706.5 747.3-696 732-696h-12v479.566Q720-186 698.85-165 677.7-144 648-144H312Zm107.789-144Q435-288 445.5-298.35 456-308.7 456-324v-264q0-15.3-10.289-25.65-10.29-10.35-25.5-10.35Q405-624 394.5-613.65 384-603.3 384-588v264q0 15.3 10.289 25.65 10.29 10.35 25.5 10.35Zm120 0Q555-288 565.5-298.35 576-308.7 576-324v-264q0-15.3-10.289-25.65-10.29-10.35-25.5-10.35Q525-624 514.5-613.65 504-603.3 504-588v264q0 15.3 10.289 25.65 10.29 10.35 25.5 10.35Z"/>
-								</svg>
-							</button>
-						</td>
+						<td><input type="checkbox" bind:checked={row.selected} on:change={toggleSelection}></td>
 						<td>
 							<input
 							type="text"
@@ -181,6 +190,37 @@
 </div>
 
 <style>
+	.flex, .info, .info button {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		text-wrap: nowrap;
+	}
+	.info {
+		position: absolute;
+		background: var(--tertiary);
+		padding: 16px;
+		gap: 64px;
+		bottom: 16px;
+		border-radius: 16px;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	.info button {
+		border: 0;
+		padding: 4px 8px;
+		background: var(--secondary);
+		color: var(--text);
+		border-radius: 6px;
+		gap: 4px;
+		font-size: 1em;
+	}
+	.info button:hover {
+		filter: brightness(1.25);
+	}
+	.info button.red {
+		background: var(--main1);
+	}
 	label[for="semester"] {
 		display: flex;
 		align-items: center;
@@ -195,8 +235,8 @@
 		font-size: 16px;
 		color: var(--text);
 	}
-	svg {
-		display: block;
+	input {
+		accent-color: var(--main1);
 	}
 	main>button {
 		align-self: center;

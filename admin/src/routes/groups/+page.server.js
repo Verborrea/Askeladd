@@ -1,5 +1,64 @@
 import { redirect } from '@sveltejs/kit'
 
+async function createGroups(locals, professors, courses, groups) {
+	// Para transformar a los profesores y cursos en ids
+	let p_dict = {}, c_dict = {}
+		
+	professors.forEach(p => {
+		p_dict[p.lname + ' ' + p.fname] = p.id
+	});
+
+	courses.forEach(c => {
+		c_dict[c.code] = c.id
+	});
+
+	// Formatear grupos con los ids obtenidos
+	groups = groups.map((g) => { return {
+		id: g.id,
+		code: g.code,
+		course: c_dict[g.course],
+		professors: g.professors.map(p => p_dict[p]),
+		semester: g.semester
+	}});
+
+	// Obtener lista antigua de grupos y asegurarse de que
+	// los registros coincidan.
+	const oldGroups = await locals.pb.collection('groups').getFullList({
+		fields: 'id',
+	});
+  
+	const newGroups = groups.map((group) => group.id);
+
+	// Borrar grupos que ya no están en la lista
+	const groupsToDelete = oldGroups.filter((g) => !newGroups.includes(g.id));
+	for (const groupToDelete of groupsToDelete) {
+		await locals.pb.collection('groups').delete(groupToDelete.id);
+	}
+	
+	// Crear nuevos grupos o actualizar si ya existen
+	for (const newGroup of groups) {
+		const existingGroup = oldGroups.find((g) => g.id === newGroup.id);
+		if (existingGroup) {
+		  // Actualizar curso existente si es necesario
+		  await locals.pb.collection('groups').update(existingGroup.id, {
+			code: newGroup.code,
+			course: newGroup.course,
+			professors: newGroup.professors,
+			semester: newGroup.semester
+		  });
+		} else {
+		  // Crear nuevo curso si no existe
+		  await locals.pb.collection('groups').create({
+			id: newGroup.id,
+			code: newGroup.code,
+			course: newGroup.course,
+			professors: newGroup.professors,
+			semester: newGroup.semester
+		  });
+		}
+	}
+}
+
 export async function load({ locals }) {
 	if (!locals.pb.authStore.isValid) {
 		throw redirect(307, '/login')
@@ -24,7 +83,8 @@ export async function load({ locals }) {
 			code: g.code,
 			course: g.expand.course.code,
 			professors: g.expand.professors.map(profesor => profesor.lname + ' ' + profesor.fname),
-			semester: g.semester
+			semester: g.semester,
+			selected: false
 		};
 	}
 
@@ -39,77 +99,21 @@ export const actions = {
 	subir: async ({ locals, request }) => {
 		let { courses, professors, groups } = Object.fromEntries(await request.formData());
 		
-		courses = JSON.parse(courses)
 		professors = JSON.parse(professors)
+		courses = JSON.parse(courses)
 		groups = JSON.parse(groups)
 
-		// Para transformar a los profesores y cursos en ids
-		let p_dict = {}, c_dict = {}
-		
-		professors.forEach(p => {
-			p_dict[p.lname + ' ' + p.fname] = p.id
-		});
-
-		courses.forEach(c => {
-			c_dict[c.code] = c.id
-		});
-
-		// Formatear grupos con los ids obtenidos
-		groups = groups.map((g) => { return {
-			id: g.id,
-			code: g.code,
-			course: c_dict[g.course],
-			professors: g.professors.map(p => p_dict[p]),
-			semester: g.semester
-		}});
-
-		// Obtener lista antigua de grupos y asegurarse de que
-		// los registros coincidan.
-		const oldGroups = await locals.pb.collection('groups').getFullList({
-			fields: 'id',
-		});
-	  
-		const newGroups = groups.map((group) => group.id);
-
-		// Borrar grupos que ya no están en la lista
-		const groupsToDelete = oldGroups.filter((g) => !newGroups.includes(g.id));
-		for (const groupToDelete of groupsToDelete) {
-			await locals.pb.collection('groups').delete(groupToDelete.id);
-		}
-		
-		// Crear nuevos grupos o actualizar si ya existen
-		for (const newGroup of groups) {
-			const existingGroup = oldGroups.find((g) => g.id === newGroup.id);
-			if (existingGroup) {
-			  // Actualizar curso existente si es necesario
-			  await locals.pb.collection('groups').update(existingGroup.id, {
-				code: newGroup.code,
-				course: newGroup.course,
-				professors: newGroup.professors,
-				semester: newGroup.semester
-			  });
-			} else {
-			  // Crear nuevo curso si no existe
-			  await locals.pb.collection('groups').create({
-				id: newGroup.id,
-				code: newGroup.code,
-				course: newGroup.course,
-				professors: newGroup.professors,
-				semester: newGroup.semester
-			  });
-			}
-		}
+		createGroups(locals, professors, courses, groups)
 	},
 	exams: async ({ locals, request }) => {
 
 		const data = await request.formData()
-		const semester = data.get('semester')
-		
-		const groups = await locals.pb.collection('groups').getFullList({
-			expand: 'course',
-			fields: 'id,semester,expand.course.name',
-			filter: `semester='${semester}'`
-		});
+
+		const professors = JSON.parse(data.get('professors'))
+		const courses = JSON.parse(data.get('courses'))
+		const groups = JSON.parse(data.get('groups'))
+
+		createGroups(locals, professors, courses, groups)
 
 		for (const group of groups) {
 			let info = {

@@ -6,9 +6,9 @@
 	
 	export let exam
 
-	let items = exam.content;
-	let grades = exam.grades;
-	let listaSO = [], matrix = [], metrics = []
+	let items = exam.content
+	let grades = exam.grades
+	let listaSO = [], matrix = []
 
 	items.forEach(pregunta => {
 		pregunta.so.forEach(so => {

@@ -55,9 +55,34 @@ export const actions = {
 			return fail(400, { message: "Las preguntas deben sumar 20 puntos" })
 		}
 
+		let listaSO = []
+
+		items = JSON.parse(items)
+
+		items.forEach(pregunta => {
+			pregunta.so.forEach(so => {
+				if (!listaSO.includes(so)) {
+					listaSO.push(so);
+				}
+			});
+		});
+
+		listaSO.sort()
+
+		const maxPuntajePorSO = {};
+		listaSO.forEach(so => {
+			maxPuntajePorSO[so] = 0;
+			items.forEach(pregunta => {
+				if (pregunta.so.includes(so)) {
+					maxPuntajePorSO[so] += pregunta.pts / pregunta.so.length;
+				}
+			});
+		});
+
 		await locals.pb.collection("exams").update(params.examId, {
 			status: "Calificando",
-			content: items
+			content: items,
+			max_so: maxPuntajePorSO
 		});
 	},
 	sendFile: async ({ locals, params, request }) => {
