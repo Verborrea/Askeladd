@@ -26,7 +26,7 @@
 	let selected_period = periods[0]
 
 	function toggleAll() {
-		groups = groups.map(g => ({ ...g, selected: allSelected }));
+		groups = groups.map(g => ({ ...g, selected: allSelected && g.semester === selected_period }));
 	}
 
 	function toggleSelection() {

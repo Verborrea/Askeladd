@@ -4,24 +4,23 @@
 	let options = '';
 	let favDialog;
 
-	const showModal = () => {
+	function showModal() {
 		if (selection.length > 0) {
 			options = selection
 		}
 		favDialog.showModal();
 	}
 
-	const closeModal = () => {
+	function closeModal() {
 		favDialog.close();
 		options = []
 	}
 
-	const saveModal = () => {
+	function saveModal() {
 		selection = options;
 		closeModal();
 	}
 </script>
-
 
 <dialog bind:this={favDialog}>
   <form>

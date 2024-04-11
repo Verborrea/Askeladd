@@ -6,11 +6,11 @@ async function createGroups(locals, professors, courses, groups) {
 		
 	professors.forEach(p => {
 		p_dict[p.lname + ' ' + p.fname] = p.id
-	});
+	})
 
 	courses.forEach(c => {
 		c_dict[c.code] = c.id
-	});
+	})
 
 	// Formatear grupos con los ids obtenidos
 	groups = groups.map((g) => { return {
@@ -19,44 +19,48 @@ async function createGroups(locals, professors, courses, groups) {
 		course: c_dict[g.course],
 		professors: g.professors.map(p => p_dict[p]),
 		semester: g.semester
-	}});
+	}})
 
 	// Obtener lista antigua de grupos y asegurarse de que
 	// los registros coincidan.
 	const oldGroups = await locals.pb.collection('groups').getFullList({
 		fields: 'id',
-	});
-  
-	const newGroups = groups.map((group) => group.id);
+	})
+
+	const newGroups = groups.map((group) => group.id)
 
 	// Borrar grupos que ya no están en la lista
-	const groupsToDelete = oldGroups.filter((g) => !newGroups.includes(g.id));
+	const groupsToDelete = oldGroups.filter((g) => !newGroups.includes(g.id))
 	for (const groupToDelete of groupsToDelete) {
-		await locals.pb.collection('groups').delete(groupToDelete.id);
+		await locals.pb.collection('groups').delete(groupToDelete.id)
 	}
-	
-	// Crear nuevos grupos o actualizar si ya existen
-	for (const newGroup of groups) {
-		const existingGroup = oldGroups.find((g) => g.id === newGroup.id);
+
+	// Crear nuevas promesas para crear o actualizar grupos
+	const promises = groups.map(async (newGroup) => {
+		const existingGroup = oldGroups.find((g) => g.id === newGroup.id)
+
 		if (existingGroup) {
-		  // Actualizar curso existente si es necesario
-		  await locals.pb.collection('groups').update(existingGroup.id, {
-			code: newGroup.code,
-			course: newGroup.course,
-			professors: newGroup.professors,
-			semester: newGroup.semester
-		  });
+			// Actualizar grupo existente si es necesario
+			await locals.pb.collection('groups').update(existingGroup.id, {
+				code: newGroup.code,
+				course: newGroup.course,
+				professors: newGroup.professors,
+				semester: newGroup.semester
+			})
 		} else {
-		  // Crear nuevo curso si no existe
-		  await locals.pb.collection('groups').create({
-			id: newGroup.id,
-			code: newGroup.code,
-			course: newGroup.course,
-			professors: newGroup.professors,
-			semester: newGroup.semester
-		  });
+			// Crear nuevo grupo si no existe
+			await locals.pb.collection('groups').create({
+				id: newGroup.id,
+				code: newGroup.code,
+				course: newGroup.course,
+				professors: newGroup.professors,
+				semester: newGroup.semester
+			})
 		}
-	}
+	})
+
+	// Esperar a que todas las promesas se resuelvan
+	await Promise.all(promises)
 }
 
 export async function load({ locals }) {
@@ -103,7 +107,7 @@ export const actions = {
 		courses = JSON.parse(courses)
 		groups = JSON.parse(groups)
 
-		createGroups(locals, professors, courses, groups)
+		await createGroups(locals, professors, courses, groups)
 	},
 	exams: async ({ locals, request }) => {
 
@@ -111,68 +115,66 @@ export const actions = {
 
 		const professors = JSON.parse(data.get('professors'))
 		const courses = JSON.parse(data.get('courses'))
-		const groups = JSON.parse(data.get('groups'))
+		let groups = JSON.parse(data.get('groups'))
 
-		createGroups(locals, professors, courses, groups)
+		await createGroups(locals, professors, courses, groups)
+
+		groups = groups.filter((g) => g.selected).map(g => ({
+			...g,
+			course: courses.find(c => c.code === g.course).name
+		}))
 
 		for (const group of groups) {
-			let info = {
-				content: [],
-				status: "En Blanco"
-			}
+			let content = []
+			let status = "En Blanco"
 			if (group.semester.slice(-1) !== 'V') {
 				// Crear examen parcial
-				if (group.expand.course.name === 'Proyecto Final de Carrera I' ||
-					group.expand.course.name === 'Proyecto Final de Carrera II') {
-					info = {
-						content: [
-							{id:1,text:'Fondo',so:['1','2','3','4','5','6','7'],src: '',pts:10},
-							{id:2,text:'Forma',so:['1','2','3','4','5','6','7'],src: '',pts:10},
-						],
-						status: "Calificando"
-					}
+				if (group.course === 'Proyecto Final de Carrera I' || group.course === 'Proyecto Final de Carrera II') {
+					content = [
+						{id:1,text:'Fondo',so:['1','2','3','4','5','6','7'],src: '',pts:10},
+						{id:2,text:'Forma',so:['1','2','3','4','5','6','7'],src: '',pts:10},
+					],
+					status = "Calificando"
 				}
-				if (group.expand.course.name === 'Proyecto Final de Carrera III') {
-					info = {
-						content: [
-							{id:1,text:'Fondo',so:['1','2','3','4','5','6','7'],src: '',pts:3},
-							{id:2,text:'Forma',so:['1','2','3','4','5','6','7'],src: '',pts:3},
-							{id:3,text:'Resultados',so:['1','2','3','4','5','6','7'],src: '',pts:14},
-						],
-						status: "Calificando"
-					}
+				if (group.course === 'Proyecto Final de Carrera III') {
+					content = [
+						{id:1,text:'Fondo',so:['1','2','3','4','5','6','7'],src: '',pts:3},
+						{id:2,text:'Forma',so:['1','2','3','4','5','6','7'],src: '',pts:3},
+						{id:3,text:'Resultados',so:['1','2','3','4','5','6','7'],src: '',pts:14},
+					],
+					status = "Calificando"
 				}
 				await locals.pb.collection('exams').create({
 					type: "Parcial",
-					...info,
+					content,
+					status,
 					group: group.id,
 					grades: [],
 				});
 
 				// Crear examen final
-				if (group.expand.course.name === 'Proyecto Final de Carrera I' ||
-					group.expand.course.name === 'Proyecto Final de Carrera II' ||
-					group.expand.course.name === 'Proyecto Final de Carrera III') {
-					info = {
-						content: [
-							{id:1,text:'Fondo',so:['1','2','3','4','5','6','7'],src: '',pts:3},
-							{id:2,text:'Forma',so:['1','2','3','4','5','6','7'],src: '',pts:3},
-							{id:3,text:'Resultados',so:['1','2','3','4','5','6','7'],src: '',pts:14},
-						],
-						status: "Calificando"
-					}
+				if (group.course === 'Proyecto Final de Carrera I' ||
+					group.course === 'Proyecto Final de Carrera II' ||
+					group.course === 'Proyecto Final de Carrera III') {
+					content = [
+						{id:1,text:'Fondo',so:['1','2','3','4','5','6','7'],src: '',pts:3},
+						{id:2,text:'Forma',so:['1','2','3','4','5','6','7'],src: '',pts:3},
+						{id:3,text:'Resultados',so:['1','2','3','4','5','6','7'],src: '',pts:14},
+					],
+					status = "Calificando"
 				}
 				await locals.pb.collection('exams').create({
 					type: "Final",
-					...info,
+					content,
+					status,
 					group: group.id,
 					grades: [],
 				});
 			} else {
 				await locals.pb.collection('exams').create({
 					type: "Único",
-					status: "En Blanco",
 					content: [],
+					status: "En Blanco",
 					group: group.id,
 					grades: [],
 				});
